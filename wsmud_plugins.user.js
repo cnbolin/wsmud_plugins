@@ -649,9 +649,9 @@
         3: {}
     };
     // 自动下次追捕
-    var unauto_zb = false;
+    var unauto_zb = true;
     // 追捕完成武庙疗伤
-    var unauto_zb_ls = false;
+    var unauto_zb_ls = true;
     // 下次追捕等待时间
     var unauto_zb_ls_wait = 20000;
     //自动施法黑名单
