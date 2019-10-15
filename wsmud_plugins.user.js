@@ -1947,6 +1947,7 @@
          * 追捕完等待时间继续追捕
          * @param count 击杀最大检查次数
          * @param next 下次开始追捕等待毫秒数
+         * @param gotoWM 追捕完去武庙疗伤
          */
         check_zb_npc_over: function (count, gotoWM, next) {
             if (!count || count < 0) {
@@ -1965,7 +1966,7 @@
                         messageAppend(next + "毫秒后，开始下次追捕。");
                         window.setTimeout(function () {
                             WG.Send("stopstate");
-                            WG.go_yamen_task()
+                            window.setTimeout(WG.go_yamen_task, 1000);
                         }, next);
                     }
                     return;
