@@ -1927,9 +1927,11 @@
                     WG.Send("kill " + $(npc).attr("itemid"));
                     messageAppend("找到" + zb_npc + "，自动击杀！！！");
                     WG.zb_next = 0;
-                    window.setTimeout(function(){
-                        WG.check_zb_npc_over(unauto_zb, unauto_zb_ls, unauto_zb_ls_wait);
-                    }, 1000);
+                    if (unauto_zb) {
+                        window.setTimeout(function () {
+                            WG.check_zb_npc_over(30, unauto_zb_ls, unauto_zb_ls_wait);
+                        }, 1000);
+                    }
                     return;
                 }
             }
@@ -1947,6 +1949,7 @@
          * 追捕完等待时间继续追捕
          * @param count 击杀最大检查次数
          * @param next 下次开始追捕等待毫秒数
+         * @param gotoWM 追捕完去武庙疗伤
          */
         check_zb_npc_over: function (count, gotoWM, next) {
             if (!count || count < 0) {
@@ -1958,14 +1961,14 @@
                     messageAppend(zb_npc + "击杀成功");
                     if (gotoWM) {
                         messageAppend("躲武庙疗伤。");
-                        WG.go("扬州城-武庙");
-                        WG.Send("liaoshang");
+                        window.setTimeout(function () {
+                            WG.go("扬州城-武庙");
+                        }, 1000);
                     }
                     if (next) {
                         messageAppend(next + "毫秒后，开始下次追捕。");
                         window.setTimeout(function () {
-                            WG.Send("stopstate");
-                            WG.go_yamen_task()
+                            WG.go_yamen_task();
                         }, next);
                     }
                     return;
