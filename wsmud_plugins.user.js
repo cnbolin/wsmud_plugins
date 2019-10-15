@@ -648,6 +648,12 @@
         2: {},
         3: {}
     };
+    // 自动下次追捕
+    var unauto_zb = false;
+    // 追捕完成武庙疗伤
+    var unauto_zb_ls = false;
+    // 下次追捕等待时间
+    var unauto_zb_ls_wait = 20000;
     //自动施法黑名单
     var unauto_pfm = '';
     //自动施法开关
@@ -1921,6 +1927,9 @@
                     WG.Send("kill " + $(npc).attr("itemid"));
                     messageAppend("找到" + zb_npc + "，自动击杀！！！");
                     WG.zb_next = 0;
+                    window.setTimeout(function(){
+                        WG.check_zb_npc_over(unauto_zb, unauto_zb_ls, unauto_zb_ls_wait);
+                    }, 1000);
                     return;
                 }
             }
@@ -1933,6 +1942,38 @@
             if (!found) {
                 window.setTimeout(WG.check_zb_npc, 1000);
             }
+        },
+        /**
+         * 追捕完等待时间继续追捕
+         * @param count 击杀最大检查次数
+         * @param next 下次开始追捕等待毫秒数
+         */
+        check_zb_npc_over: function (count, gotoWM, next) {
+            if (!count || count < 0) {
+                return;
+            }
+            var lists = $(".room_items .room-item");
+            for (var npc of lists) {
+                if (npc.innerText.indexOf(zb_npc + "的尸体") != -1) {
+                    messageAppend(zb_npc + "击杀成功");
+                    if (gotoWM) {
+                        messageAppend("躲武庙疗伤。");
+                        WG.go("扬州城-武庙");
+                        WG.Send("liaoshang");
+                    }
+                    if (next) {
+                        messageAppend(next + "毫秒后，开始下次追捕。");
+                        window.setTimeout(function () {
+                            WG.Send("stopstate");
+                            WG.go_yamen_task()
+                        }, next);
+                    }
+                    return;
+                }
+            }
+            window.setTimeout(function () {
+                WG.check_zb_npc_over(--count)
+            }, 1000);
         },
         kill_all: function () {
             var lists = $(".room_items .room-item");
@@ -5613,6 +5654,9 @@
                         <option value="3">套装3</option>
                     </select>
                 </span> </div> `
+                + UI.html_switch("unauto_zb", "自动继续追捕：")
+                + UI.html_switch("unauto_zb_ls", "追捕完成自动疗伤：")
+                + UI.html_lninput("unauto_zb_ls_wait", "追捕完成自动疗伤时间(ms)： ")
                 + UI.html_lninput("ks_pfm", "BOSS叫杀延时(ms)： ")
                 + UI.html_lninput("ks_wait", "BOSS击杀等待延迟(s)： ")
                 + UI.html_switch('autopfmswitch', '自动施法开关：', 'auto_pfmswitch')
